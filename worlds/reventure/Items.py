@@ -66,7 +66,7 @@ item_table: Dict[str, ItemData] = {
     'Shopkeeper': ItemData(reventureOffset+40, True),
     'Mimic': ItemData(reventureOffset+41, True),
     'King': ItemData(reventureOffset+42, True),
-    'Chicken': ItemData(reventureOffset+43, True, special=True),
+    'Chicken': ItemData(reventureOffset+43, True),
     'Elder': ItemData(reventureOffset+44, True),
     'Boulder': ItemData(reventureOffset+45, True),
     

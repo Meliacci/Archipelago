@@ -65,12 +65,6 @@ class ReventureWorld(World):
             item = ReventureItem(name, self.player)
             pool.append(item)
 
-        # Add Chicken
-        pool.append(self.create_item("Chicken"))
-        pool.append(self.create_item("Chicken"))
-        pool.append(self.create_item("Chicken"))
-        pool.append(self.create_item("Chicken"))
-
         # if self.isExperimentalRegionGraph():
         #     # Add Jump increase
         #     pool.append(self.create_item("Jump Increase"))
