@@ -103,5 +103,16 @@ class TrackerWorld(World):
     item_name_to_id = {}
     location_name_to_id = {}
 
-icon_paths["hijack_ico"] = f"ap:{__name__}/icon.png"
-components.append(Component("Hijack - Pilot Generator", None, func=launch_client, component_type=Type.CLIENT, icon="hijack_ico"))
+print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!ap:{__name__}/icon/icon.png")
+
+icon_paths["hijack_ico"] = f"ap:{__name__}/icon/icon.png"
+components.append(
+    Component(
+        "Hijack - Pilot Generator",
+        None,
+        cli=True,
+        func=launch_client,
+        description="Generate a multiworld with the YAMLs in the players folder.",
+        component_type=Type.MISC,
+        icon="hijack_ico")
+    )

@@ -24,36 +24,44 @@ from Utils import __version__, output_path, restricted_dumps, version_tuple
 from settings import get_settings
 from worlds import AutoWorld
 from worlds.generic.Rules import exclusion_rules, locality_rules
+from worlds.hijack_pilot import HIJACK_VERSION
 
 class PilotSpoiler(Spoiler):
-    def to_file(self, filename: str) -> None:
+    def to_file(self, filename: str,temp_dir:str) -> None:
+        super().to_file(filename)
         from itertools import chain
         from worlds import AutoWorld
         from Options import Visibility
         import Options
+        
 
         def write_option(option_key: str, option_obj: Options.AssembleOptions) -> None:
             res = getattr(self.multiworld.worlds[player].options, option_key)
             if res.visibility & Visibility.spoiler:
                 display_name = getattr(option_obj, "display_name", option_key)
                 outfile.write(f"{display_name + ':':33}{res.current_option_name}\n")
+        PlayersSpoilerFileDict: dict[int, str]=dict() # int to Dict Cache
+        for player in range(1, self.multiworld.players + 1):
+            PlayersSpoilerFileDict[player]=output_path(temp_dir,'%d%s_Pilot_Spoiler.txt' % (player, "".join(c for c in self.multiworld.get_player_name(player) if c.isalpha() or c.isdigit() or c==' ').rstrip()))
+        
+        for player in range(1, self.multiworld.players + 1):
+        
+            with open(PlayersSpoilerFileDict[player], 'w', encoding="utf-8-sig") as outfile:
+                AutoWorld.call_stage(self.multiworld, "write_spoiler_header", outfile)
+                # Commonheader
+                outfile.write(
+                    'Archipelago Version %s  -  Seed: %s\n' % (
+                        Utils.__version__, self.multiworld.seed))
+                outfile.write(
+                    'Hijack Pilot Version %s  \n\n' % (
+                        HIJACK_VERSION))
+                outfile.write('Filling Algorithm:               %s\n' % self.multiworld.algorithm)
+                outfile.write('Players:                         %d\n' % self.multiworld.players)
+                if self.multiworld.players > 1:
+                    loc_count = len([loc for loc in self.multiworld.get_locations() if not loc.is_event])
+                    outfile.write('Total Location Count:            %d\n' % loc_count)
+                outfile.write(f'Plando Options:                  {self.multiworld.plando_options}\n')
 
-        with open(filename, 'w', encoding="utf-8-sig") as outfile:
-            outfile.write(
-                'Archipelago Version %s  -  Seed: %s\n\n' % (
-                    Utils.__version__, self.multiworld.seed))
-            outfile.write(
-                'Archipelago Version %s  -  Seed: %s\n\n' % (
-                    Utils.__version__, self.multiworld.seed))
-            outfile.write('Filling Algorithm:               %s\n' % self.multiworld.algorithm)
-            outfile.write('Players:                         %d\n' % self.multiworld.players)
-            if self.multiworld.players > 1:
-                loc_count = len([loc for loc in self.multiworld.get_locations() if not loc.is_event])
-                outfile.write('Total Location Count:            %d\n' % loc_count)
-            outfile.write(f'Plando Options:                  {self.multiworld.plando_options}\n')
-            AutoWorld.call_stage(self.multiworld, "write_spoiler_header", outfile)
-
-            for player in range(1, self.multiworld.players + 1):
                 if self.multiworld.players > 1:
                     outfile.write('\nPlayer %d: %s\n' % (player, self.multiworld.get_player_name(player)))
                 outfile.write('Game:                            %s\n' % self.multiworld.game[player])
@@ -66,55 +74,34 @@ class PilotSpoiler(Spoiler):
 
                 AutoWorld.call_single(self.multiworld, "write_spoiler_header", player, outfile)
 
-            if self.entrances:
-                outfile.write('\n\nEntrances:\n\n')
-                outfile.write('\n'.join(['%s%s %s %s' % (f'{self.multiworld.get_player_name(entry["player"])}: '
-                                                         if self.multiworld.players > 1 else '', entry['entrance'],
-                                                         '<=>' if entry['direction'] == 'both' else
-                                                         '<=' if entry['direction'] == 'exit' else '=>',
-                                                         entry['exit']) for entry in self.entrances.values()]))
+                if self.entrances:
+                    outfile.write('\n\nEntrances:\n\n')
+                    
+                    # ("[Player:]Entrance(<=>,<=,=>)Exit")
 
-            AutoWorld.call_all(self.multiworld, "write_spoiler", outfile)
+                    outfile.write('\n'.join(['%s%s %s %s' % (f'{self.multiworld.get_player_name(entry["player"])}: ' #Adds a Comparison to the Current Player
+                                                            if (self.multiworld.players > 1) and(entry["player"]==player) else '', entry['entrance'],
+                                                            '<=>' if entry['direction'] == 'both' else
+                                                            '<=' if entry['direction'] == 'exit' else '=>',
+                                                            entry['exit']) for entry in self.entrances.values()]))
+                
+                AutoWorld.call_single(self.multiworld, "write_spoiler", player, outfile)
 
-            precollected_items = [f"{item.name} ({self.multiworld.get_player_name(item.player)})"
-                                  if self.multiworld.players > 1
-                                  else item.name
-                                  for item in chain.from_iterable(self.multiworld.precollected_items.values())]
-            if precollected_items:
-                outfile.write("\n\nStarting Items:\n\n")
-                outfile.write("\n".join([item for item in precollected_items]))
+                precollected_items = [f"{item.name} ({self.multiworld.get_player_name(item.player)})"
+                                    if self.multiworld.players > 1 and item.player == player
+                                    else item.name
+                                    for item in chain.from_iterable(self.multiworld.precollected_items.values())]
+                if precollected_items:
+                    outfile.write("\n\nStarting Items:\n\n")
+                    outfile.write("\n".join([item for item in precollected_items]))
 
-            locations = [(str(location), str(location.item) if location.item is not None else "Nothing")
-                         for location in self.multiworld.get_locations() if location.show_in_spoiler]
-            outfile.write('\n\nLocations:\n\n')
-            outfile.write('\n'.join(
-                ['%s: %s' % (location, item) for location, item in locations]))
-
-            outfile.write('\n\nPlaythrough:\n\n')
-            outfile.write('\n'.join(['%s: {\n%s\n}' % (sphere_nr, '\n'.join(
-                [f"  {location}: {item}" for (location, item) in sphere.items()] if isinstance(sphere, dict) else
-                [f"  {item}" for item in sphere])) for (sphere_nr, sphere) in self.playthrough.items()]))
-            if self.unreachables:
-                outfile.write('\n\nUnreachable Progression Items:\n\n')
-                outfile.write(
-                    '\n'.join(['%s: %s' % (unreachable.item, unreachable)
-                               for unreachable in sorted(self.unreachables)]))
-
-            if self.paths:
-                outfile.write('\n\nPaths:\n\n')
-                path_listings: List[str] = []
-                for location, path in sorted(self.paths.items()):
-                    path_lines: List[str] = []
-                    for region, exit in path:
-                        if exit is not None:
-                            path_lines.append("{} -> {}".format(region, exit))
-                        else:
-                            path_lines.append(region)
-                    path_listings.append("{}\n        {}".format(location, "\n   =>   ".join(path_lines)))
-
-                outfile.write('\n'.join(path_listings))
-            AutoWorld.call_all(self.multiworld, "write_spoiler_end", outfile)
-    pass
+                locations = [(str(location), str(location.item) if location.item is not None else "Nothing")
+                            for location in self.multiworld.get_locations(player) if location.show_in_spoiler]
+                outfile.write('\n\nLocations:\n\n')
+                outfile.write('\n'.join(
+                    ['%s: %s' % (location, item) for location, item in locations]))
+                    
+                AutoWorld.call_all(self.multiworld, "write_spoiler_end", outfile)
 
 def mystery_argparse(argv: list[str] | None = None) -> argparse.Namespace:
     
@@ -179,7 +166,7 @@ def PatchedMain(args=None, seed=None, baked_server_options: dict[str, object] | 
     start = time.perf_counter()
     # initialize the multiworld
     multiworld = MultiWorld(args.multi)
-    args.outputname = "W" + (f"{random.randint(0, pow(10, seeddigits) - 1)}".zfill(seeddigits))
+    args.outputname = "Pilot_W" + (f"{random.randint(0, pow(10, seeddigits) - 1)}".zfill(seeddigits))
     logger = logging.getLogger()
     multiworld.set_seed(seed, args.race, str(args.outputname) if args.outputname else None)
     multiworld.plando_options = args.plando
@@ -195,7 +182,7 @@ def PatchedMain(args=None, seed=None, baked_server_options: dict[str, object] | 
     multiworld.set_item_links()
     multiworld.state = CollectionState(multiworld)
     logger.info('Archipelago Version %s  -  Seed: %s\n', __version__, multiworld.seed)
-
+    logger.info('Hijack Pilot Version %s\n', HIJACK_VERSION)
     logger.info(f"Found {len(AutoWorld.AutoWorldRegister.world_types)} World Types:")
     longest_name = max(len(text) for text in AutoWorld.AutoWorldRegister.world_types)
 
@@ -364,13 +351,13 @@ def PatchedMain(args=None, seed=None, baked_server_options: dict[str, object] | 
 
     logger.info(f'Beginning output...')
     outfilebase = 'AP_' + multiworld.seed_name
-
+    multiworld.spoiler = PilotSpoiler(multiworld)
     if args.spoiler_only:
         if args.spoiler > 1:
             logger.info('Calculating playthrough.')
             multiworld.spoiler.create_playthrough(create_paths=args.spoiler > 2)
 
-        multiworld.spoiler.to_file(output_path('%s_Spoiler.txt' % outfilebase))
+        multiworld.spoiler.to_file(output_path('%s_Spoiler.txt' % outfilebase),temp_dir)
         logger.info('Done. Skipped multidata modification. Total time: %s', time.perf_counter() - start)
         return multiworld
 
@@ -522,7 +509,7 @@ def PatchedMain(args=None, seed=None, baked_server_options: dict[str, object] | 
             multiworld.spoiler.create_playthrough(create_paths=args.spoiler > 2)
 
         if args.spoiler:
-            multiworld.spoiler.to_file(os.path.join(temp_dir, '%s_Spoiler.txt' % outfilebase))
+            multiworld.spoiler.to_file(os.path.join(temp_dir, '%s_Spoiler.txt' % outfilebase),temp_dir)
 
         zipfilename = output_path(f"AP_{multiworld.seed_name}.zip")
         logger.info(f"Creating final archive at {zipfilename}")
