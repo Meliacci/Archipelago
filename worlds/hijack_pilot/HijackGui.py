@@ -17,7 +17,7 @@ from . import HIJACK_VERSION, HijackGenerator
 if not sys.stdout:  # to make sure sm varia's "i'm working" dots don't break UT in frozen
     sys.stdout = open(os.devnull, 'w', encoding="utf-8")  # from https://stackoverflow.com/a/6735958
 
-logger = logging.getLogger("Generator")
+logger = logging.getLogger()
 
 DEBUG = False
 ITEMS_HANDLING = 0b111
