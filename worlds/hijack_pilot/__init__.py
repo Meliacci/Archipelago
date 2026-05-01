@@ -103,8 +103,6 @@ class TrackerWorld(World):
     item_name_to_id = {}
     location_name_to_id = {}
 
-print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!ap:{__name__}/icon/icon.png")
-
 icon_paths["hijack_ico"] = f"ap:{__name__}/icon/icon.png"
 components.append(
     Component(
