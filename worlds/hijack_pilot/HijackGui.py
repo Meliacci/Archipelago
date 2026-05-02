@@ -1,21 +1,19 @@
 
+from ast import arg
 import logging
+import multiprocessing
 import os
+import subprocess
+import shlex
 import sys
+from Launcher import which
+from Generate import main as Gmain
+from Utils import __version__,  is_linux, is_macos, is_windows
 
-import Generate
-from Utils import __version__
-
-try:
-    from Utils import gui_enabled
-except ImportError:
-    gui_enabled = not sys.stdout or "--nogui" not in sys.argv #if we fail to find, just guess it ourselves
-
-from Generate import main as GMain, mystery_argparse
-from . import HIJACK_VERSION, HijackGenerator
+from . import HijackGenerator
 
 if not sys.stdout:  # to make sure sm varia's "i'm working" dots don't break UT in frozen
-    sys.stdout = open(os.devnull, 'w', encoding="utf-8")  # from https://stackoverflow.com/a/6735958
+    sys.stdout = open(os.devnull, 'w', encoding="utf-8")
 
 logger = logging.getLogger()
 
@@ -23,10 +21,10 @@ DEBUG = False
 ITEMS_HANDLING = 0b111
 UT_MAP_TAB_KEY = "UT_MAP"
 
-def main(args):
+def main(*args):
     import atexit
     confirmation = atexit.register(input, "Press enter to close.")
-    erargs, seed = Generate.main()
+    erargs, seed = Gmain(args=args)
     multiworld = HijackGenerator.PatchedMain(erargs, seed)
     if __debug__:
         import gc
@@ -44,7 +42,23 @@ def main(args):
 
 
 def launch(*args):
-    main(args)
+    exe=("python","-m",__name__)
+    if is_windows:
+        # intentionally using a window title with a space so it gets quoted and treated as a title
+        subprocess.Popen(["start", "Running Pilot Generator", *exe], shell=True)
+        return
+    elif is_linux:
+        terminal = which('x-terminal-emulator') or which('gnome-terminal') or which('xterm')
+        if terminal:
+            subprocess.Popen([terminal, '-e', shlex.join(exe)])
+            return
+    elif is_macos:
+        terminal = [which('open'), '-W', '-a', 'Terminal.app']
+        subprocess.Popen([*terminal, *exe])
+        return
+    NuProc=multiprocessing.Process(target=main, args=args)
+    NuProc.start()
+    #main(args)
 
 if __name__ == "__main__":
-    launch(*sys.argv[1:])
+    main(*sys.argv[1:])
