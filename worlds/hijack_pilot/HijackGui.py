@@ -1,32 +1,15 @@
-
 import logging
-import os
 import sys
+from Generate import main as Gmain
 
-import Generate
-from Utils import __version__
-
-try:
-    from Utils import gui_enabled
-except ImportError:
-    gui_enabled = not sys.stdout or "--nogui" not in sys.argv #if we fail to find, just guess it ourselves
-
-from Generate import main as GMain, mystery_argparse
-from . import HIJACK_VERSION, HijackGenerator
-
-if not sys.stdout:  # to make sure sm varia's "i'm working" dots don't break UT in frozen
-    sys.stdout = open(os.devnull, 'w', encoding="utf-8")  # from https://stackoverflow.com/a/6735958
+from . import HijackGenerator
 
 logger = logging.getLogger()
 
-DEBUG = False
-ITEMS_HANDLING = 0b111
-UT_MAP_TAB_KEY = "UT_MAP"
-
-def main(args):
+def main(*args):
     import atexit
     confirmation = atexit.register(input, "Press enter to close.")
-    erargs, seed = Generate.main()
+    erargs, seed = Gmain(args=args)
     multiworld = HijackGenerator.PatchedMain(erargs, seed)
     if __debug__:
         import gc
