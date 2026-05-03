@@ -27,23 +27,7 @@ def main(*args):
 
 
 def launch(*args):
-    exe=("python","-m",__name__)
-    if is_windows:
-        # intentionally using a window title with a space so it gets quoted and treated as a title
-        subprocess.Popen(["start", "Running Pilot Generator", *exe], shell=True)
-        return
-    elif is_linux:
-        terminal = which('x-terminal-emulator') or which('gnome-terminal') or which('xterm')
-        if terminal:
-            subprocess.Popen([terminal, '-e', shlex.join(exe)])
-            return
-    elif is_macos:
-        terminal = [which('open'), '-W', '-a', 'Terminal.app']
-        subprocess.Popen([*terminal, *exe])
-        return
-    NuProc=multiprocessing.Process(target=main, args=args)
-    NuProc.start()
-    #main(args)
+    main(args)
 
 if __name__ == "__main__":
-    main(*sys.argv[1:])
+    launch(*sys.argv[1:])
