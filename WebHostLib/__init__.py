@@ -46,6 +46,10 @@ app.config["SELFGEN"] = True  # application process is in charge of scheduling G
 app.config["JOB_THRESHOLD"] = 1
 # after what time in seconds should generation be aborted, freeing the queue slot. Can be set to None to disable.
 app.config["JOB_TIME"] = 600
+# maximum time in seconds since last activity for a room to be hosted
+app.config["MAX_ROOM_TIMEOUT"] = 259200
+# minimum time in days since last activity for a room to be deleted. 0 to disable.
+app.config["ROOM_AUTO_DELETE"] = 0
 # memory limit for generator processes in bytes
 app.config["GENERATOR_MEMORY_LIMIT"] = 4294967296
 
@@ -69,7 +73,9 @@ CLI(app)
 
 
 def to_python(value: str) -> uuid.UUID:
-    return uuid.UUID(bytes=base64.urlsafe_b64decode(value + '=='))
+    if "=" in value or any(c.isspace() for c in value):
+        raise ValueError("Invalid UUID format")
+    return uuid.UUID(bytes=base64.urlsafe_b64decode(value + '=' * (-len(value) % 4)))
 
 
 def to_url(value: uuid.UUID) -> str:
