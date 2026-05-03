@@ -9,7 +9,7 @@ logger = logging.getLogger()
 def main(*args):
     import atexit
     confirmation = atexit.register(input, "Press enter to close.")
-    erargs, seed = Gmain(args=args)
+    erargs, seed = Gmain()
     multiworld = HijackGenerator.PatchedMain(erargs, seed)
     if __debug__:
         import gc
