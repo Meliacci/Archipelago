@@ -24,7 +24,7 @@ from Utils import __version__, output_path, restricted_dumps, version_tuple
 from settings import get_settings
 from worlds import AutoWorld
 from worlds.generic.Rules import exclusion_rules, locality_rules
-HIJACK_VERSION = "v0.0.1"
+HIJACK_VERSION = "v0.0.4"
 
 class PilotSpoiler(Spoiler):
     def to_file(self, filename: str,temp_dir:str) -> None:
