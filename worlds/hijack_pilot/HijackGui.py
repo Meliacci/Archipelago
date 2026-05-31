@@ -27,7 +27,7 @@ def Hijacking_argparse(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument('--spoiler', type=int, default=defaults.spoiler)
     parser.add_argument('--outputpath', default=settings.general_options.output_path,
                         help="Path to output folder. Absolute or relative to cwd.")  # absolute or relative to cwd
-    parser.add_argument('--allow_quantity', action="store_true", default=defaults.allow_quantity,
+    parser.add_argument('--allow_quantity', action="store_true", default=False,
                         help='Allows the use of the quantity option in yamls. Default is the set value in the host.yaml.')
     parser.add_argument('--race', action='store_true', default=defaults.race)
     parser.add_argument('--meta_file_path', default=defaults.meta_file_path)
