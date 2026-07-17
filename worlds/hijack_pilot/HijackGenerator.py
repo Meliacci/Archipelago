@@ -101,7 +101,7 @@ class PilotSpoiler(Spoiler):
                 outfile.write('\n'.join(
                     ['%s: %s' % (location, item) for location, item in locations]))
                     
-                AutoWorld.call_all(self.multiworld, "write_spoiler_end", outfile)
+                AutoWorld.call_single(self.multiworld, "write_spoiler_end", player,outfile)
 
 def mystery_argparse(argv: list[str] | None = None) -> argparse.Namespace:
     
