@@ -61,7 +61,8 @@ class PilotSpoiler(Spoiler):
                     loc_count = len([loc for loc in self.multiworld.get_locations() if not loc.is_event])
                     outfile.write('Total Location Count:            %d\n' % loc_count)
                 outfile.write(f'Plando Options:                  {self.multiworld.plando_options}\n')
-
+                AutoWorld.call_stage(self.multiworld, "write_spoiler_header", outfile)
+                
                 if self.multiworld.players > 1:
                     outfile.write('\nPlayer %d: %s\n' % (player, self.multiworld.get_player_name(player)))
                 outfile.write('Game:                            %s\n' % self.multiworld.game[player])
@@ -80,17 +81,16 @@ class PilotSpoiler(Spoiler):
                     # ("[Player:]Entrance(<=>,<=,=>)Exit")
 
                     outfile.write('\n'.join(['%s%s %s %s' % (f'{self.multiworld.get_player_name(entry["player"])}: ' #Adds a Comparison to the Current Player
-                                                            if (self.multiworld.players > 1) and(entry["player"]==player) else '', entry['entrance'],
+                                                            if (self.multiworld.players > 1) else '', entry['entrance'],
                                                             '<=>' if entry['direction'] == 'both' else
                                                             '<=' if entry['direction'] == 'exit' else '=>',
-                                                            entry['exit']) for entry in self.entrances.values()]))
-                
+                                                            entry['exit']) for entry in self.entrances.values() if (entry["player"]==player)]))
                 AutoWorld.call_single(self.multiworld, "write_spoiler", player, outfile)
 
                 precollected_items = [f"{item.name} ({self.multiworld.get_player_name(item.player)})"
-                                    if self.multiworld.players > 1 and item.player == player
+                                    if self.multiworld.players > 1
                                     else item.name
-                                    for item in chain.from_iterable(self.multiworld.precollected_items.values())]
+                                    for item in chain.from_iterable(self.multiworld.precollected_items.values()) if item.player == player]
                 if precollected_items:
                     outfile.write("\n\nStarting Items:\n\n")
                     outfile.write("\n".join([item for item in precollected_items]))
@@ -166,6 +166,7 @@ def PatchedMain(args=None, seed=None, baked_server_options: dict[str, object] | 
     start = time.perf_counter()
     # initialize the multiworld
     multiworld = MultiWorld(args.multi)
+    multiworld.spoiler = PilotSpoiler(multiworld)
     args.outputname = "Pilot_W" + (f"{random.randint(0, pow(10, seeddigits) - 1)}".zfill(seeddigits))
     logger = logging.getLogger()
     multiworld.set_seed(seed, args.race, str(args.outputname) if args.outputname else None)
@@ -351,7 +352,7 @@ def PatchedMain(args=None, seed=None, baked_server_options: dict[str, object] | 
 
     logger.info(f'Beginning output...')
     outfilebase = 'AP_' + multiworld.seed_name
-    multiworld.spoiler = PilotSpoiler(multiworld)
+    
     if args.spoiler_only:
         if args.spoiler > 1:
             logger.info('Calculating playthrough.')
