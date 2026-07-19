@@ -27,12 +27,15 @@ def create_regions(options: ReventureOptions, multiworld: MultiWorld, player: in
     # Normal creation
 
     locations = []
-    for loc_name in options.logic.keys():
-        if loc_name == "start_region" or loc_name == "item_locations" or loc_name == "starting_jumps" or loc_name == "total_jump_increase":
-            continue
-        loc_name = loc_name.replace("_", " ")
-        if loc_name:
-            locations.append(loc_name)
+    if isExperimental:
+        for loc_name in options.logic.keys():
+            if loc_name == "start_region" or loc_name == "item_locations" or loc_name == "starting_jumps" or loc_name == "total_jump_increase":
+                continue
+            loc_name = loc_name.replace("_", " ")
+            if loc_name:
+                locations.append(loc_name)
+    else:
+        locations = [location for location in location_table]
     multiworld.regions += [
         create_region(multiworld, player, 'Menu', None, ['Startbutton']),
         create_region(multiworld, player, 'Reventureworld', locations)

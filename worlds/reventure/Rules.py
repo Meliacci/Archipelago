@@ -145,7 +145,7 @@ def set_rules(options: ReventureOptions, multiworld: MultiWorld, p: int, isExper
         return state.has_all(["Dark Stone", "Dark Stone Lever Middle"], p)
 
     def has_chicken(state: CollectionState, p: int) -> bool:
-        return state.has("Chicken", p, 4)
+        return state.has("Chicken", p)
     
     def has_nuke(state: CollectionState, player: int) -> bool:
         return state.has_all(["Nuke", "Hook"], player)
