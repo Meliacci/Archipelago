@@ -1,0 +1,24 @@
+########################
+# Hic sunt dracones... #
+#  Here be dragons...  #
+########################
+
+This apworld is NOT meant as a learning tool for new apworld devs. You may be confusing this custom world, for the Core, Native to the AP-Launcher, APQuest.
+While APQuest is indeed the proper learning resource that everyon should point towards, THIS is a port to the GBA, 
+thus includes a lot more Jank than needed, while keeping the logic and Gameplay mostly the same.
+
+
+###################
+# Further reading #
+###################
+
+While GBAPquest is not the proper place to start your journey into developing your own APworld, 
+I would Like to still be helpful and Direct you where the ACTUAL things you should read are;
+
+Relevant documentation for implementing a game can be found [here](<https://github.com/ArchipelagoMW/Archipelago/tree/main/docs>).
+
+You should also Read the original APquest's World code. APQuest has two main goals according to Vi:
+Be a game that core can rely on for unit tests because it is "owned" by the project instead of any one person.
+The code for APQuest is absolutely filled with commentary code so it can be used as an example/tutorial for other people looking to develop an APWorld
+https://github.com/ArchipelagoMW/Archipelago/tree/main/worlds/apquest
+
