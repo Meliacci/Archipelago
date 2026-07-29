@@ -12,15 +12,27 @@ if TYPE_CHECKING:
 # Every location must have a unique integer ID associated with it.
 # We will have a lookup from location name to ID here that, in world.py, we will import and bind to the world class.
 # Even if a location doesn't exist on specific options, it must be present in this lookup.
+
+# ('Initializers',0x0803d28c,0xf0) # A single Initializer is 0x0f and has the Struct EInteractType, Better to build Programmatically
+
+    # Chest 1-6
+    # {EIT_CHEST, 3,5, 0x05, ITEM_HEALTH, inanimatesMetaTiles}, "Top Left Room Chest"
+	# {EIT_CHEST, 3,9, 0x05, ITEM_CONFETTI, inanimatesMetaTiles},"Bottom Left Extra Chest"//0x02 Confetti Extra Chest
+	# {EIT_CHEST, 3,11, 0x05, ITEM_SWORD, inanimatesMetaTiles}, "Bottom Left Chest"
+	# {EIT_CHEST, 7,3, 0x05, ITEM_HEALTH, inanimatesMetaTiles}, "Top Middle Chest"
+	# {EIT_CHEST, 10,11, 0x05, ITEM_SHIELD, inanimatesMetaTiles}, "Bottom Right Room Left Chest"
+	# {EIT_CHEST, 11,11, 0x05, ITEM_HAMMER, inanimatesMetaTiles}, "Bottom Right Room Right Chest"://0x06, Hammer Turns into Confetti when not in hammer mode
+    # Enemies 7-8
+    # {EIT_BOSS, 11,3, 0x08, 2, bossMetaTiles},//Let's start this one at EasyMode
+	# {EIT_ENEMY, 11,7, 0x01, ITEM_KEY, normal_enemyMetaTiles},//this one is also Easy mode, Hardmode Starts at 2
 LOCATION_NAME_TO_ID = {
-    "Top Left Room Chest": 1,
-    "Top Middle Chest": 2,
-    "Bottom Left Chest": 3,
-    "Bottom Left Extra Chest": 4,
-    "Bottom Right Room Left Chest": 5,
-    "Bottom Right Room Right Chest": 6,
-    # Location IDs don't need to be sequential, as long as they're unique and greater than 0.
-    "Right Room Enemy Drop": 10,
+    "Top Left Room Chest": 0x35,
+    "Bottom Left Extra Chest": 0x39,
+    "Bottom Left Chest": 0x3B,
+    "Top Middle Chest": 0x73,
+    "Bottom Right Room Left Chest": 0xAB,
+    "Bottom Right Room Right Chest": 0xBB,
+    "Right Room Enemy Drop": 0xB7,
 }
 
 
