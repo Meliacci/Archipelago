@@ -98,10 +98,10 @@ def write_tokens(world: "GBAPQuestWorld", patch: GBAPQUESTProcedurePatch) -> Non
 
     MainFunctionBaseAddres=0x0cdc
     # Disable Mode Switching
-    patch.write_token(APTokenTypes.WRITE, MainFunctionBaseAddres+0x030D, bytes([0xe7]))
+    patch.write_token(APTokenTypes.WRITE, MainFunctionBaseAddres+0x0321, bytes([0xe7]))
     WalltMetaInitBaseAddress=0x075c
     # Disable HammerOverride from Initializer to Interactive Initializers (Make Bottom Left Right chest NOT always HammerOrConfetti)
-    patch.write_token(APTokenTypes.WRITE, WalltMetaInitBaseAddress+0x5e, bytes([0x1b,0x00]))
+    patch.write_token(APTokenTypes.WRITE, WalltMetaInitBaseAddress+0x6E, bytes([0x1b,0x00]))
     # Static Mode Toggles
     dataSectionBaseAddress=0x03e8c4
     if options.hard_mode.value:
