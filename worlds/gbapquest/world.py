@@ -1,6 +1,5 @@
 import os
 from collections.abc import Mapping
-from pyclbr import Class
 from typing import Any, ClassVar
 # Imports of base Archipelago modules must be absolute.
 from worlds.AutoWorld import World
