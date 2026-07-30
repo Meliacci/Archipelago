@@ -1,11 +1,7 @@
 import logging
 from typing import TYPE_CHECKING
 
-from sympy import false
-
 from NetUtils import ClientStatus, color
-
-from argparse import Namespace
 
 import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
