@@ -103,11 +103,11 @@ class StartWithOneConfettiCannon(Toggle):
 #     # For example, we could make it so "player_sprite: kitty" resolves to "player_sprite: cat" like this:
 #     alias_kitty = option_cat
 
-class Deathlink(Toggle):
-    """
-    Wether or not you can Receive and Send Deathlinks
-    """
-    display_name = "Activate Deathlink"
+# class Deathlink(Toggle):
+#     """
+#     Wether or not you can Receive and Send Deathlinks
+#     """
+#     display_name = "Activate Deathlink"
     
 # We must now define a dataclass inheriting from PerGameCommonOptions that we put all our options in.
 # This is in the format "option_name_in_snake_case: OptionClassName".
@@ -117,7 +117,7 @@ class GBAPQuestOptions(PerGameCommonOptions):
     hammer: Hammer
     extra_starting_chest: ExtraStartingChest
     start_with_one_confetti_cannon: StartWithOneConfettiCannon
-    deathlink: Deathlink
+    # deathlink: Deathlink
     #trap_chance: TrapChance
     #confetti_explosiveness: ConfettiExplosiveness
     #player_sprite: PlayerSprite
