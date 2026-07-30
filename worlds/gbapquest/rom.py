@@ -171,9 +171,8 @@ def write_tokens(world: "GBAPQuestWorld", patch: GBAPQUESTProcedurePatch) -> Non
     for LocationInfo in active_locations:
         gbapquest_logger.info(f'Patching Locations:{LocationInfo} with item {LocationInfo.item.name}')
         if LocationNameToInitializerIndex.get(LocationInfo.name,-1) != -1:# Negative index is invalid, 0 index is valid
-            if LocationInfo.item and LocationInfo.item.game == world.game:# They belong to the Own game letting you see Items as what they are but for other people
+            if LocationInfo.item and LocationInfo.item.player == world.player:# They belong to the Own game letting you see Items as what they are. Only works for Local items
                 gbapquest_logger.info(f'Placing Native Item {LocationInfo.item}:{LocationInfo.item.name}')
-                # Fortunately we do not need to deal with the Palette and metatile Pointer since the game takes it's info from the Item ID to load the Sprite dynamically
                 patch.write_token(APTokenTypes.WRITE,InitializersBaseAddress+LocationNameToInitializerIndex[LocationInfo.name]*0x10+0x06,bytes(ItemNameToGBAItemIDBytes.get(LocationInfo.item.name, [0x01,0x00])))
             else:
                 gbapquest_logger.info(f'Placing Non-Native Item {LocationInfo.item}:{LocationInfo.item.name}')
