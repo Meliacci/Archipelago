@@ -13,8 +13,6 @@ from worlds.Files import APProcedurePatch, APTokenMixin, APTokenTypes, APPatchEx
 
 from .options import HardMode, Hammer, ExtraStartingChest
 
-gbapquest_logger = logging.getLogger("GBAPquest")
-
 GBAPQUEST_HASH="31343ab6a58782ed7b0107f43cd46b10"
 
 class GBAPQuestSettings(settings.Group):
@@ -167,18 +165,14 @@ def write_tokens(world: "GBAPQuestWorld", patch: GBAPQUESTProcedurePatch) -> Non
     InitializersBaseAddress=0x03d2a4
     # We exit the inner `If Start Inventory` and  go to deal with the Local Items on the locations
     active_locations = world.multiworld.get_locations(world.player)
-    gbapquest_logger.info(f'Patching Locations for game {world.game}')
     for LocationInfo in active_locations:
-        gbapquest_logger.info(f'Patching Locations:{LocationInfo} with item {LocationInfo.item.name}')
         if LocationNameToInitializerIndex.get(LocationInfo.name,-1) != -1:# Negative index is invalid, 0 index is valid
             if LocationInfo.item and LocationInfo.item.player == world.player:# They belong to the Own game letting you see Items as what they are. Only works for Local items
-                gbapquest_logger.info(f'Placing Native Item {LocationInfo.item}:{LocationInfo.item.name}')
                 patch.write_token(APTokenTypes.WRITE,InitializersBaseAddress+LocationNameToInitializerIndex[LocationInfo.name]*0x10+0x06,bytes(ItemNameToGBAItemIDBytes.get(LocationInfo.item.name, [0x01,0x00])))
             else:
-                gbapquest_logger.info(f'Placing Non-Native Item {LocationInfo.item}:{LocationInfo.item.name}')
                 # Every other Game's Items is a simple AP item Sprite, so we don't compare their Name with anything
                 # We could in theory parse the Name for a similar Sprite, but i don't feel like it :p, maybe something to do later
                 patch.write_token(APTokenTypes.WRITE,InitializersBaseAddress+LocationNameToInitializerIndex[LocationInfo.name]*0x10+0x06,bytes([0x01,0x00]))
         else:
-            gbapquest_logger.error(f'Index For {LocationInfo} is {LocationNameToInitializerIndex.get(LocationInfo.name,-1)} somehow')
+            pass
     patch.write_file("token_data.bin", patch.get_token_binary())
