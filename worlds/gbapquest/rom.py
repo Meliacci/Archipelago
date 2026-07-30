@@ -32,7 +32,7 @@ class GBAPQUESTProcedurePatch(APProcedurePatch, APTokenMixin):
     hash = GBAPQUEST_HASH
     patch_file_ending = ".apgbpq"
     result_file_ending = ".gba"
-    game = "GBAPquest"
+    game = "GBAPQuest"
 
     procedure = [
         ("apply_tokens", ["token_data.bin"]), # this... SHOULD work?
