@@ -167,7 +167,7 @@ def PatchedMain(args=None, seed=None, baked_server_options: dict[str, object] | 
     # initialize the multiworld
     multiworld = MultiWorld(args.multi)
     multiworld.spoiler = PilotSpoiler(multiworld)
-    args.outputname = "Pilot_W" + (f"{random.randint(0, pow(10, seeddigits) - 1)}".zfill(seeddigits))
+    args.outputname = "W" + (f"{random.randint(0, pow(10, seeddigits) - 1)}".zfill(seeddigits))
     logger = logging.getLogger()
     multiworld.set_seed(seed, args.race, str(args.outputname) if args.outputname else None)
     multiworld.plando_options = args.plando
