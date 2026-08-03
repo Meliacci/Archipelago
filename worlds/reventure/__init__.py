@@ -1,5 +1,4 @@
 import copy
-from random import choice
 import string
 import typing
 
@@ -137,7 +136,7 @@ class ReventureWorld(World):
         return slot_data
 
     def get_filler_item_name(self) -> str:
-        return choice(filler_items)
+        return self.random.choice(filler_items)
 
 
 class ReventureItem(Item):
